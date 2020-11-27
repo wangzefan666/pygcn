@@ -1,16 +1,11 @@
-from __future__ import division
-from __future__ import print_function
-
 import time
 import argparse
 import numpy as np
-
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-
-from pygcn.utils import load_data, accuracy
-from pygcn.models import GCN
+from utils import load_data, accuracy
+from models import GCN
 
 # Training settings
 parser = argparse.ArgumentParser()
@@ -64,7 +59,7 @@ def train(epoch):
     model.train()
     optimizer.zero_grad()
     output = model(features, adj)
-    loss_train = F.nll_loss(output[idx_train], labels[idx_train])
+    loss_train = F.cross_entropy(output[idx_train], labels[idx_train])
     acc_train = accuracy(output[idx_train], labels[idx_train])
     loss_train.backward()
     optimizer.step()
@@ -75,7 +70,7 @@ def train(epoch):
         model.eval()
         output = model(features, adj)
 
-    loss_val = F.nll_loss(output[idx_val], labels[idx_val])
+    loss_val = F.cross_entropy(output[idx_val], labels[idx_val])
     acc_val = accuracy(output[idx_val], labels[idx_val])
     print('Epoch: {:04d}'.format(epoch+1),
           'loss_train: {:.4f}'.format(loss_train.item()),
